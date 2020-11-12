@@ -37,3 +37,22 @@ exports.getBookById = (req, res) => {
 		},
 	});
 };
+
+exports.updateBook = (req, res) => {
+	const id = Number(req.params.id);
+	const oldBook = bestBooks.find(elem => elem.id === id);
+	const changes = req.body;
+	const updatedBook = Object.assign(oldBook, changes);
+	bestBooks.splice(bestBooks.indexOf(oldBook), 1, updatedBook);
+	console.log(bestBooks[bestBooks.indexOf(oldBook)]);
+
+	fs.writeFile(`${__dirname}/../data/best-books.json`, JSON.stringify(bestBooks), err => {
+		res.status(201).json({
+			status: 'sucess',
+			message: 'The book has been updated.',
+			new_data: updatedBook,
+		});
+	});
+};
+
+exports.deleteBook = (req, res) => {};
