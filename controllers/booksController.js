@@ -1,7 +1,37 @@
-const express = require('express');
 const fs = require('fs');
 
 const bestBooks = JSON.parse(fs.readFileSync(`${__dirname}/../data/best-books.json`));
+
+//middleware
+exports.checkID = (req, res, next) => {
+	const id = Number(req.params.id);
+	const book = bestBooks.find(elem => elem.id === id);
+	if (!book) {
+		return res.status(404).json({
+			status: 'fail',
+			message: 'ID not found',
+		});
+	}
+	next();
+};
+
+exports.checkPostFields = (req, res, next) => {
+	const id = Number(req.params.id);
+	const changes = req.body;
+
+	//leave only existing fields from JSON:
+	const changesParams = Object.keys(changes);
+
+	for (let parameter of changesParams) {
+		if (!bestBooks[0].hasOwnProperty(parameter)) {
+			return res.status(404).json({
+				status: 'fail',
+				message: 'Invalid parameter(s)',
+			});
+		}
+	}
+	next();
+};
 
 exports.getAllBooks = (req, res) => {
 	res.status(200).json({
@@ -14,7 +44,6 @@ exports.getAllBooks = (req, res) => {
 };
 
 exports.createBook = (req, res) => {
-	console.log(req.body);
 	const newID = bestBooks.length + 1;
 	const newBook = Object.assign({ id: newID }, req.body);
 	bestBooks.push(newBook);
@@ -40,11 +69,19 @@ exports.getBookById = (req, res) => {
 
 exports.updateBook = (req, res) => {
 	const id = Number(req.params.id);
-	const oldBook = bestBooks.find(elem => elem.id === id);
+	const book = bestBooks.find(elem => elem.id === id);
 	const changes = req.body;
-	const updatedBook = Object.assign(oldBook, changes);
-	bestBooks.splice(bestBooks.indexOf(oldBook), 1, updatedBook);
-	console.log(bestBooks[bestBooks.indexOf(oldBook)]);
+
+	//leave only existing fields from JSON:
+	const changesParams = Object.keys(changes);
+	for (let paramether of changesParams) {
+		if (!book.hasOwnProperty(paramether)) {
+			delete changes[paramether];
+		}
+	}
+
+	const updatedBook = Object.assign(book, changes);
+	bestBooks.splice(bestBooks.indexOf(book), 1, updatedBook);
 
 	fs.writeFile(`${__dirname}/../data/best-books.json`, JSON.stringify(bestBooks), err => {
 		res.status(201).json({
@@ -55,4 +92,19 @@ exports.updateBook = (req, res) => {
 	});
 };
 
-exports.deleteBook = (req, res) => {};
+exports.deleteBook = (req, res) => {
+	const id = Number(req.params.id);
+	const book = bestBooks.find(elem => elem.id === id);
+	// const index = bestBooks.indexOf(book);
+	// delete bestBooks[index];
+
+	bestBooks.splice(bestBooks.indexOf(book), 1);
+	console.log(bestBooks);
+
+	fs.writeFile(`${__dirname}/../data/best-books.json`, JSON.stringify(bestBooks), err => {
+		res.status(201).json({
+			status: 'sucess',
+			message: 'The book has been deleted.',
+		});
+	});
+};
