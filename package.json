@@ -1,0 +1,23 @@
+{
+  "name": "book-directory-simple",
+  "version": "1.0.0",
+  "description": "Simple book directory REST API made with NodeJs and Express",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nas9lug2z/book-directory-simple.git"
+  },
+  "author": "Nastia Zhyrnova <nastia.zhyrnova@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nas9lug2z/book-directory-simple/issues"
+  },
+  "homepage": "https://github.com/nas9lug2z/book-directory-simple#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
