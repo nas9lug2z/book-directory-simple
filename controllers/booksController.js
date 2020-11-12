@@ -44,7 +44,7 @@ exports.getAllBooks = (req, res) => {
 };
 
 exports.createBook = (req, res) => {
-	const newID = bestBooks.length + 1;
+	const newID = bestBooks[bestBooks.length - 1].id + 1;
 	const newBook = Object.assign({ id: newID }, req.body);
 	bestBooks.push(newBook);
 	fs.writeFile(`${__dirname}/../data/best-books.json`, JSON.stringify(bestBooks), err => {
